@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moonshelf - อ่านมังงะฟรี</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        .hero-bg {
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), 
+                        url('https://images.unsplash.com/photo-1538370965046-5c2d9d5c5f3e?w=1920') center/cover no-repeat;
+        }
+        .manga-card {
+            transition: all 0.3s ease;
+        }
+        .manga-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3);
+        }
+        .reader-img {
+            max-height: 85vh;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+
+    <!-- Navbar -->
+    <nav class="bg-slate-900 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-moon text-3xl text-sky-400"></i>
+                <h1 class="text-2xl font-bold tracking-tight">Moonshelf</h1>
+            </div>
+            
+            <div class="flex-1 max-w-xl mx-8">
+                <div class="relative">
+                    <input type="text" id="searchInput"
+                           class="w-full bg-slate-800 border border-slate-600 rounded-full py-3 px-6 pl-12 focus:outline-none focus:border-sky-400 transition"
+                           placeholder="ค้นหาชื่อมังงะ...">
+                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-3.5 text-slate-400"></i>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6 text-lg">
+                <a href="#" class="hover:text-sky-400 transition">หน้าแรก</a>
+                <a href="#" class="hover:text-sky-400 transition">แนวเรื่อง</a>
+                <a href="#" class="hover:text-sky-400 transition">อัพเดทล่าสุด</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero-bg h-screen flex items-center">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h2 class="text-6xl font-bold mb-4">อ่านมังงะในยามค่ำคืน</h2>
+            <p class="text-xl text-slate-300 mb-8">คอลเลกชันมังงะคุณภาพ • อ่านฟรี • อัพเดททุกวัน</p>
+            <button onclick="showRandomManga()" 
+                    class="bg-sky-500 hover:bg-sky-600 px-10 py-4 rounded-full text-lg font-medium transition">
+                เริ่มอ่านเลย
+            </button>
+        </div>
+    </header>
+
+    <!-- Popular -->
+    <section class="max-w-7xl mx-auto px-6 py-12">
+        <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+            <i class="fa-solid fa-fire text-orange-400"></i>
+            ยอดนิยมสัปดาห์นี้
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" id="popularGrid">
+            <!-- JS จะสร้างการ์ด -->
+        </div>
+    </section>
+
+    <!-- Latest Updates -->
+    <section class="bg-slate-900 py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-8">ตอนใหม่ล่าสุด</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="latestGrid">
+                <!-- JS จะสร้าง -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-12">
+        <div class="max-w-7xl mx-auto px-6 text-center text-slate-400">
+            <p class="text-2xl font-bold text-sky-400 mb-2">Moonshelf</p>
+            <p>เว็บอ่านมังงะฟรี คลีน และสบายตา</p>
+            <p class="mt-6 text-sm">© 2026 Moonshelf • ตัวอย่างเว็บไซต์</p>
+        </div>
+    </footer>
+
+    <!-- Reader Modal -->
+    <div id="readerModal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center">
+        <div class="max-w-4xl w-full mx-4">
+            <div class="flex justify-between items-center mb-4 px-4">
+                <h3 id="modalTitle" class="text-xl font-medium"></h3>
+                <button onclick="closeReader()" class="text-3xl text-slate-400 hover:text-white">✕</button>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl">
+                <img id="readerImage" src="https://picsum.photos/1200/1800" alt="Chapter" class="reader-img mx-auto rounded-lg shadow-2xl">
+            </div>
+            <div class="flex justify-between mt-6 px-4 text-2xl">
+                <button onclick="prevPage()" class="hover:text-sky-400 transition">◀</button>
+                <button onclick="closeReader()" class="bg-slate-700 hover:bg-slate-600 px-8 py-3 rounded-full text-sm">ปิด</button>
+                <button onclick="nextPage()" class="hover:text-sky-400 transition">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลตัวอย่าง
+        const mangas = [
+            { title: "Solo Leveling", slug: "solo-leveling", cover: "https://picsum.photos/id/1015/400/300", latest: "ตอน 250" },
+            { title: "Nano Machine", slug: "nano-machine", cover: "https://picsum.photos/id/201/400/300", latest: "ตอน 189" },
+            { title: "The Beginning After The End", slug: "tbate", cover: "https://picsum.photos/id/237/400/300", latest: "ตอน 178" },
+            { title: "Omniscient Reader", slug: "omniscient-reader", cover: "https://picsum.photos/id/180/400/300", latest: "ตอน 215" },
+            { title: "Wind Breaker", slug: "wind-breaker", cover: "https://picsum.photos/id/133/400/300", latest: "ตอน 512" }
+        ];
+
+        // สร้างการ์ด Popular
+        function createMangaCards() {
+            const container = document.getElementById('popularGrid');
+            container.innerHTML = '';
+            
+            mangas.forEach(manga => {
+                const card = document.createElement('div');
+                card.className = 'manga-card bg-slate-900 rounded-xl overflow-hidden cursor-pointer';
+                card.innerHTML = `
+                    <div class="relative">
+                        <img src="${manga.cover}" class="w-full h-64 object-cover">
+                        <div class="absolute top-2 right-2 bg-black/70 text-xs px-2 py-1 rounded">${manga.latest}</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium line-clamp-2">${manga.title}</h3>
+                    </div>
+                `;
+                card.onclick = () => openReader(manga);
+                container.appendChild(card);
+            });
+        }
+
+        // สร้าง Latest Updates
+        function createLatest() {
+            const container = document.getElementById('latestGrid');
+            container.innerHTML = '';
+            
+            mangas.forEach(manga => {
+                const item = document.createElement('div');
+                item.className = 'flex gap-4 bg-slate-900 rounded-xl p-4 hover:bg-slate-800 transition cursor-pointer';
+                item.innerHTML = `
+                    <img src="${manga.cover}" class="w-20 h-28 object-cover rounded-lg">
+                    <div>
+                        <h4 class="font-medium">${manga.title}</h4>
+                        <p class="text-sky-400 text-sm mt-1">${manga.latest}</p>
+                        <p class="text-slate-400 text-xs mt-4">2 ชั่วโมงที่แล้ว</p>
+                    </div>
+                `;
+                item.onclick = () => openReader(manga);
+                container.appendChild(item);
+            });
+        }
+
+        // เปิดหน้าอ่าน
+        function openReader(manga) {
+            document.getElementById('modalTitle').textContent = `${manga.title} - ${manga.latest}`;
+            document.getElementById('readerModal').classList.remove('hidden');
+        }
+
+        function closeReader() {
+            document.getElementById('readerModal').classList.add('hidden');
+        }
+
+        function prevPage() { alert('หน้าก่อนหน้า'); }
+        function nextPage() { alert('หน้าถัดไป'); }
+
+        function showRandomManga() {
+            const random = mangas[Math.floor(Math.random() * mangas.length)];
+            openReader(random);
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                alert('ค้นหา: ' + this.value);
+            }
+        });
+
+        // Initialize
+        window.onload = () => {
+            createMangaCards();
+            createLatest();
+        };
+    </script>
+</body>
+</html>
