@@ -1,0 +1,18 @@
+{
+  "lastUpdated": "2026-07-07",
+  "totalMangas": 1,
+  "mangas": [
+    {
+      "title": "Cutie",
+      "slug": "cutie",
+      "cover": "/Manga-Library/cutie/cover.jpg",
+      "banner": "/Manga-Library/cutie/banner.jpg",
+      "description": "เรื่องราวของ Cutie สาวน้อยน่ารักในโลกแฟนตาซี",
+      "author": "Unknown",
+      "status": "Ongoing",
+      "genres": ["Comedy", "Slice of Life", "Fantasy"],
+      "latestChapter": "045",
+      "updatedAt": "2026-07-07"
+    }
+  ]
+}
