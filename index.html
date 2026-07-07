@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Vercel Web</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        button {
+            background-color: #ff758c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
+        }
+        button:hover {
+            background-color: #ff7eb3;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ยินดีด้วย! เว็บไซต์ของคุณทำงานแล้ว</h1>
+        <p>เชื่อมต่อ GitHub กับ Vercel สำเร็จ 🎉</p>
+        <button id="clickBtn">ลองคลิกตรงนี้ดูสิ</button>
+        <p id="message" style="margin-top: 15px; font-weight: bold; min-height: 24px;"></p>
+    </div>
+
+    <script>
+        const button = document.getElementById('clickBtn');
+        const message = document.getElementById('message');
+        const greetings = [
+            "สุดยอดไปเลย! 🚀",
+            "ระบบ CI/CD ทำงานได้ดีมาก ✨",
+            "ลองแก้โค้ดแล้ว Push ใหม่อีกรอบสิ 💻",
+            "ยินดีต้อนรับสู่โลกของ Web Dev! 🌐"
+        ];
+
+        button.addEventListener('click', () => {
+            const randomIndex = Math.floor(Math.random() * greetings.length);
+            message.textContent = greetings[randomIndex];
+        });
+    </script>
+</body>
+</html>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลตัวอย่าง
+        const mangas = [
+            { title: "Solo Leveling", slug: "solo-leveling", cover: "https://picsum.photos/id/1015/400/300", latest: "ตอน 250" },
+            { title: "Nano Machine", slug: "nano-machine", cover: "https://picsum.photos/id/201/400/300", latest: "ตอน 189" },
+            { title: "The Beginning After The End", slug: "tbate", cover: "https://picsum.photos/id/237/400/300", latest: "ตอน 178" },
+            { title: "Omniscient Reader", slug: "omniscient-reader", cover: "https://picsum.photos/id/180/400/300", latest: "ตอน 215" },
+            { title: "Wind Breaker", slug: "wind-breaker", cover: "https://picsum.photos/id/133/400/300", latest: "ตอน 512" }
+        ];
+
+        // สร้างการ์ด Popular
+        function createMangaCards() {
+            const container = document.getElementById('popularGrid');
+            container.innerHTML = '';
+            
+            mangas.forEach(manga => {
+                const card = document.createElement('div');
+                card.className = 'manga-card bg-slate-900 rounded-xl overflow-hidden cursor-pointer';
+                card.innerHTML = `
+                    <div class="relative">
+                        <img src="${manga.cover}" class="w-full h-64 object-cover">
+                        <div class="absolute top-2 right-2 bg-black/70 text-xs px-2 py-1 rounded">${manga.latest}</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium line-clamp-2">${manga.title}</h3>
+                    </div>
+                `;
+                card.onclick = () => openReader(manga);
+                container.appendChild(card);
+            });
+        }
+
+        // สร้าง Latest Updates
+        function createLatest() {
+            const container = document.getElementById('latestGrid');
+            container.innerHTML = '';
+            
+            mangas.forEach(manga => {
+                const item = document.createElement('div');
+                item.className = 'flex gap-4 bg-slate-900 rounded-xl p-4 hover:bg-slate-800 transition cursor-pointer';
+                item.innerHTML = `
+                    <img src="${manga.cover}" class="w-20 h-28 object-cover rounded-lg">
+                    <div>
+                        <h4 class="font-medium">${manga.title}</h4>
+                        <p class="text-sky-400 text-sm mt-1">${manga.latest}</p>
+                        <p class="text-slate-400 text-xs mt-4">2 ชั่วโมงที่แล้ว</p>
+                    </div>
+                `;
+                item.onclick = () => openReader(manga);
+                container.appendChild(item);
+            });
+        }
+
+        // เปิดหน้าอ่าน
+        function openReader(manga) {
+            document.getElementById('modalTitle').textContent = `${manga.title} - ${manga.latest}`;
+            document.getElementById('readerModal').classList.remove('hidden');
+        }
+
+        function closeReader() {
+            document.getElementById('readerModal').classList.add('hidden');
+        }
+
+        function prevPage() { alert('หน้าก่อนหน้า'); }
+        function nextPage() { alert('หน้าถัดไป'); }
+
+        function showRandomManga() {
+            const random = mangas[Math.floor(Math.random() * mangas.length)];
+            openReader(random);
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                alert('ค้นหา: ' + this.value);
+            }
+        });
+
+        // Initialize
+        window.onload = () => {
+            createMangaCards();
+            createLatest();
+        };
+    </script>
+</body>
+</html>
