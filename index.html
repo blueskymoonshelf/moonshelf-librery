@@ -3,71 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My First Vercel Web</title>
+    <title>ดึงรูปจาก Nextcloud</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-        h1 {
-            margin-bottom: 10px;
-            font-size: 2.5rem;
-        }
-        p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        button {
-            background-color: #ff758c;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
-        }
-        button:hover {
-            background-color: #ff7eb3;
-            transform: translateY(-2px);
-        }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #preview img { max-width: 800px; border: 2px solid #ddd; border-radius: 10px; margin: 20px; }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>Halo Halo Halo</h1>
-        <p>เชื่อมต่อเว็ปไซต์ อยู่ระหว่างดำเนินการ</p>
-        <button id="clickBtn">ลองคลิกตรงนี้สิ</button>
-        <p id="message" style="margin-top: 15px; font-weight: bold; min-height: 24px;"></p>
-    </div>
+    <h1>แสดงรูป knight.jpg จาก Nextcloud</h1>
+    
+    <button onclick="loadImage()">โหลดรูปภาพ</button>
+    
+    <div id="preview"></div>
 
     <script>
-        const button = document.getElementById('clickBtn');
-        const message = document.getElementById('message');
-        const greetings = [
-            "กฎบัญญัติของอัศวิน",
-            "1.โดดเดี่ยว-แสวงหาตัวตน",
-            "2.อ่อนน้อมถ่อมตน-ไม่ดูถูกผู้ที่อ่อนแอ",
-            "3.ความกตัญญู",
-            "4.ความภาคภูมิใจ",
+        const shareLink = "http://fedora.tail7594aa.ts.net/nextcloud/index.php/s/xSWByoA8iZYzP9L";
+        const fileName = "knight.jpg";
+
+        function loadImage() {
+            const preview = document.getElementById('preview');
+            const directUrl = `\( {shareLink}/download?path=&files= \){fileName}`;
+
+            preview.innerHTML = `
+                <img src="${directUrl}" alt="Knight Photo" onerror="this.onerror=null; this.src=''; alert('ไม่สามารถโหลดรูปได้ อาจเพราะลิงก์หมดอายุหรือไม่เปิดอนุญาต')">
+                <p>กำลังโหลด: ${fileName}</p>
+            `;
+        }
+    </script>
+</body>
+</html>            "4.ความภาคภูมิใจ",
             "5.ความร่วมมือ",
             "6.มิตรภาพ",
             "7.การให้อภัย",
