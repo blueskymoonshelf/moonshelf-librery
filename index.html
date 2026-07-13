@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moonshelf — อ่านมังงะใต้แสงจันทร์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void: #05070d;
+    --navy-deep: #0b1120;
+    --navy: #121a30;
+    --navy-light: #1c2740;
+    --line: #263252;
+    --moon: #eaf0ff;
+    --paper: #c7d2ea;
+    --muted: #7c88a8;
+    --blue: #4d8dff;
+    --blue-bright: #7fb2ff;
+    --cyan: #62e0ff;
+    --glow: 0 0 40px rgba(77,141,255,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void);
+    color:var(--paper);
+    font-family:'Manrope', sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ambient starfield */
+  .stars{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 60% 15%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1.5px 1.5px at 80% 60%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 35% 75%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1.5px 1.5px at 92% 25%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 10% 85%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.3), transparent);
+    background-repeat:repeat;
+    background-size:600px 600px;
+    opacity:0.7;
+  }
+
+  ::selection{ background:var(--blue); color:var(--void); }
+
+  a{ color:inherit; text-decoration:none; }
+
+  .wrap{ max-width:1280px; margin:0 auto; padding:0 40px; position:relative; z-index:2;}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:blur(14px);
+    background:rgba(5,7,13,0.72);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 40px; max-width:1280px; margin:0 auto;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Playfair Display', serif;
+    font-size:22px; font-weight:700; color:var(--moon);
+    letter-spacing:0.3px;
+  }
+  .logo-mark{
+    width:26px; height:26px; position:relative; flex-shrink:0;
+  }
+  .logo-mark svg{ width:100%; height:100%; filter:drop-shadow(0 0 8px rgba(77,141,255,0.8)); }
+  .nav-links{ display:flex; gap:36px; font-size:14px; font-weight:600; color:var(--muted); }
+  .nav-links a{ position:relative; padding:6px 0; transition:color .25s ease; }
+  .nav-links a:hover{ color:var(--moon); }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:1px;
+    background:var(--blue-bright); transition:width .25s ease;
+  }
+  .nav-links a:hover::after{ width:100%; }
+  .nav-actions{ display:flex; align-items:center; gap:18px; }
+  .search-box{
+    display:flex; align-items:center; gap:8px;
+    background:var(--navy); border:1px solid var(--line);
+    border-radius:999px; padding:9px 16px; width:230px;
+    transition:border-color .25s ease, box-shadow .25s ease;
+  }
+  .search-box:focus-within{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(77,141,255,0.12); }
+  .search-box input{
+    background:none; border:none; outline:none; color:var(--moon);
+    font-family:'Manrope'; font-size:13px; width:100%;
+  }
+  .search-box input::placeholder{ color:var(--muted); }
+  .search-box svg{ width:15px; height:15px; stroke:var(--muted); flex-shrink:0; }
+  .btn-signin{
+    font-size:14px; font-weight:700; color:var(--void);
+    background:linear-gradient(135deg, var(--cyan), var(--blue));
+    padding:10px 22px; border-radius:999px;
+    box-shadow:0 4px 20px rgba(77,141,255,0.35);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .btn-signin:hover{ transform:translateY(-2px); box-shadow:0 6px 26px rgba(77,141,255,0.5); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; padding:110px 40px 90px;
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:60px; align-items:center;
+    max-width:1280px; margin:0 auto;
+  }
+  .moon-orbit{
+    position:absolute; top:-120px; right:-60px; width:520px; height:520px; z-index:0;
+    opacity:0.9; pointer-events:none;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:2px;
+    text-transform:uppercase; color:var(--cyan); margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:''; width:7px; height:7px; border-radius:50%;
+    background:var(--cyan); box-shadow:0 0 10px var(--cyan);
+  }
+  h1{
+    font-family:'Playfair Display', serif;
+    font-size:64px; line-height:1.08; font-weight:800;
+    color:var(--moon); letter-spacing:-0.5px; margin-bottom:26px;
+  }
+  h1 em{
+    font-style:italic; color:transparent;
+    background:linear-gradient(120deg, var(--cyan), var(--blue-bright));
+    -webkit-background-clip:text; background-clip:text;
+  }
+  .hero p{
+    font-size:17px; line-height:1.75; color:var(--muted); max-width:480px; margin-bottom:38px;
+  }
+  .hero-cta{ display:flex; gap:16px; align-items:center; }
+  .btn-primary{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--moon); color:var(--void); font-weight:800; font-size:15px;
+    padding:15px 30px; border-radius:999px;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .btn-primary:hover{ transform:translateY(-2px); background:var(--cyan); }
+  .btn-ghost{
+    display:inline-flex; align-items:center; gap:8px;
+    color:var(--paper); font-weight:600; font-size:15px; padding:15px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .btn-ghost:hover{ border-color:var(--blue-bright); color:var(--moon); }
+  .hero-stats{ display:flex; gap:36px; margin-top:52px; }
+  .hero-stats div{ display:flex; flex-direction:column; gap:4px; }
+  .hero-stats .num{ font-family:'Playfair Display', serif; font-size:28px; color:var(--moon); font-weight:700; }
+  .hero-stats .lbl{ font-size:12px; color:var(--muted); letter-spacing:0.5px; }
+
+  /* signature: stacked shelf of glowing volumes as hero visual */
+  .shelf-hero{ position:relative; z-index:1; height:460px; }
+  .shelf-row{
+    display:flex; align-items:flex-end; gap:8px; height:100%;
+    padding:0 10px 26px; border-bottom:2px solid var(--line); position:relative;
+  }
+  .shelf-row::after{
+    content:''; position:absolute; left:0; right:0; bottom:-8px; height:8px;
+    background:linear-gradient(180deg, rgba(77,141,255,0.25), transparent);
+    filter:blur(4px);
+  }
+  .vol{
+    border-radius:6px 6px 3px 3px;
+    position:relative; flex-shrink:0;
+    display:flex; align-items:flex-end; justify-content:center;
+    padding-bottom:14px;
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:rgba(234,240,255,0.55);
+    letter-spacing:1px;
+    box-shadow: inset -6px 0 14px rgba(0,0,0,0.35), 0 12px 30px rgba(0,0,0,0.5);
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .vol:hover{ transform:translateY(-14px); }
+  .vol span{ writing-mode:vertical-rl; transform:rotate(180deg); }
+
+  /* ---------- SECTIONS ---------- */
+  section{ padding:90px 40px; position:relative; z-index:2; }
+  .section-head{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    margin-bottom:44px; gap:20px; flex-wrap:wrap;
+  }
+  .section-title{
+    font-family:'Playfair Display', serif; font-size:34px; color:var(--moon); font-weight:700;
+  }
+  .section-sub{ color:var(--muted); font-size:14px; margin-top:8px; max-width:460px; }
+  .see-all{
+    font-size:13px; font-weight:700; color:var(--blue-bright);
+    display:flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .see-all:hover{ color:var(--cyan); }
+
+  /* Continue reading — phase rail */
+  .phase-rail{
+    display:flex; gap:24px; overflow-x:auto; padding-bottom:14px; scrollbar-width:thin;
+  }
+  .phase-rail::-webkit-scrollbar{ height:6px; }
+  .phase-rail::-webkit-scrollbar-thumb{ background:var(--line); border-radius:10px; }
+  .cont-card{
+    flex:0 0 300px; background:var(--navy); border:1px solid var(--line);
+    border-radius:16px; padding:20px; display:flex; gap:16px;
+    transition:border-color .25s ease, transform .25s ease;
+  }
+  .cont-card:hover{ border-color:var(--blue); transform:translateY(-4px); }
+  .cont-cover{
+    width:64px; height:88px; border-radius:8px; flex-shrink:0;
+    box-shadow:0 8px 20px rgba(0,0,0,0.4);
+  }
+  .cont-info{ display:flex; flex-direction:column; justify-content:space-between; min-width:0; }
+  .cont-info h4{ color:var(--moon); font-size:15px; font-weight:700; margin-bottom:4px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cont-info p{ color:var(--muted); font-size:12.5px; }
+  .moon-progress{ display:flex; align-items:center; gap:8px; margin-top:10px; }
+  .moon-progress .phases{ display:flex; gap:3px; }
+  .moon-phase{ width:11px; height:11px; border-radius:50%; position:relative; overflow:hidden;
+    background:var(--line); flex-shrink:0; }
+  .moon-phase.lit{ background:var(--cyan); box-shadow:0 0 8px rgba(98,224,255,0.7); }
+  .moon-progress .pct{ font-family:'JetBrains Mono'; font-size:11px; color:var(--cyan); }
+
+  /* Trending grid */
+  .grid-manga{
+    display:grid; grid-template-columns:repeat(6, 1fr); gap:22px;
+  }
+  .card{ position:relative; cursor:pointer; }
+  .card-cover{
+    aspect-ratio:3/4.3; border-radius:12px; position:relative; overflow:hidden;
+    box-shadow:0 14px 30px rgba(0,0,0,0.5);
+    transition:transform .3s ease, box-shadow .3s ease;
+    display:flex; flex-direction:column; justify-content:space-between; padding:14px;
+  }
+  .card:hover .card-cover{ transform:translateY(-8px) scale(1.02); box-shadow:0 20px 44px rgba(77,141,255,0.28); }
+  .card-cover::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.75) 100%);
+  }
+  .card-rank{
+    font-family:'Playfair Display', serif; font-size:26px; font-weight:800;
+    color:rgba(255,255,255,0.85); position:relative; z-index:1;
+    text-shadow:0 2px 12px rgba(0,0,0,0.6);
+  }
+  .card-tag{
+    position:relative; z-index:1; align-self:flex-start;
+    background:rgba(5,7,13,0.55); backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,0.15);
+    font-size:10px; font-weight:700; letter-spacing:0.5px; color:var(--cyan);
+    padding:4px 9px; border-radius:999px;
+  }
+  .card-meta{ position:relative; z-index:1; }
+  .card-meta h4{ color:#fff; font-size:14.5px; font-weight:700; margin-bottom:3px; }
+  .card-meta p{ color:rgba(234,240,255,0.6); font-size:11.5px; }
+  .card-glow{ position:absolute; inset:0; border-radius:12px; opacity:0; transition:opacity .3s ease; pointer-events:none;
+    box-shadow:0 0 0 1px rgba(125,178,255,0.5); }
+  .card:hover .card-glow{ opacity:1; }
+
+  /* Genre shelves */
+  .genre-scroll{ display:flex; gap:14px; flex-wrap:wrap; }
+  .genre-pill{
+    padding:12px 22px; border-radius:999px; border:1px solid var(--line);
+    background:var(--navy); font-size:13.5px; font-weight:600; color:var(--paper);
+    transition:all .25s ease; display:flex; align-items:center; gap:8px;
+  }
+  .genre-pill:hover{ border-color:var(--blue); color:var(--moon); background:var(--navy-light); }
+  .genre-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--cyan); }
+
+  /* New releases list */
+  .release-list{ display:flex; flex-direction:column; }
+  .release-row{
+    display:grid; grid-template-columns:80px 1fr auto auto; gap:20px; align-items:center;
+    padding:18px 0; border-bottom:1px solid var(--line);
+    transition:padding-left .25s ease;
+  }
+  .release-row:hover{ padding-left:10px; }
+  .release-cover{ width:60px; height:80px; border-radius:6px; box-shadow:0 8px 18px rgba(0,0,0,0.4); }
+  .release-info h4{ color:var(--moon); font-size:15px; font-weight:700; margin-bottom:5px; }
+  .release-info p{ color:var(--muted); font-size:12.5px; }
+  .release-chip{
+    font-family:'JetBrains Mono'; font-size:11px; color:var(--void);
+    background:var(--cyan); padding:5px 11px; border-radius:6px; font-weight:600;
+  }
+  .release-time{ color:var(--muted); font-size:12px; font-family:'JetBrains Mono'; }
+
+  /* CTA band */
+  .cta-band{
+    margin:20px 40px 0; border-radius:28px; padding:70px 60px;
+    background:linear-gradient(135deg, var(--navy-deep), var(--navy) 60%, #16213d);
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between; gap:40px;
+    position:relative; overflow:hidden;
+  }
+  .cta-band::before{
+    content:''; position:absolute; top:-140px; right:-60px; width:340px; height:340px;
+    border-radius:50%; background:radial-gradient(circle, rgba(98,224,255,0.25), transparent 70%);
+  }
+  .cta-band h3{
+    font-family:'Playfair Display', serif; font-size:32px; color:var(--moon); font-weight:700;
+    max-width:480px; position:relative; z-index:1;
+  }
+  .cta-band p{ color:var(--muted); margin-top:12px; max-width:440px; position:relative; z-index:1; }
+  .cta-band .btn-primary{ position:relative; z-index:1; flex-shrink:0; }
+
+  /* Footer */
+  footer{ padding:70px 40px 34px; border-top:1px solid var(--line); margin-top:40px; }
+  .foot-grid{
+    display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:50px; margin-bottom:50px;
+  }
+  .foot-brand p{ color:var(--muted); font-size:13.5px; line-height:1.7; margin-top:14px; max-width:280px; }
+  .foot-col h5{ color:var(--moon); font-size:13px; letter-spacing:1px; text-transform:uppercase; margin-bottom:18px; }
+  .foot-col a{ display:block; color:var(--muted); font-size:13.5px; margin-bottom:12px; transition:color .2s ease; }
+  .foot-col a:hover{ color:var(--blue-bright); }
+  .foot-bottom{
+    display:flex; justify-content:space-between; align-items:center;
+    padding-top:28px; border-top:1px solid var(--line);
+    font-size:12.5px; color:var(--muted); flex-wrap:wrap; gap:14px;
+  }
+
+  @media (max-width:980px){
+    .hero{ grid-template-columns:1fr; padding-top:60px; }
+    .shelf-hero{ display:none; }
+    h1{ font-size:44px; }
+    .grid-manga{ grid-template-columns:repeat(3,1fr); }
+    .foot-grid{ grid-template-columns:1fr 1fr; }
+    .nav-links{ display:none; }
+    .search-box{ width:150px; }
+  }
+  @media (max-width:560px){
+    .wrap, section, nav{ padding-left:20px; padding-right:20px; }
+    .grid-manga{ grid-template-columns:repeat(2,1fr); }
+    .cta-band{ flex-direction:column; text-align:center; margin:20px; padding:44px 26px; }
+    .release-row{ grid-template-columns:60px 1fr; }
+    .release-chip, .release-time{ display:none; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<header>
+  <nav>
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M20 13.5A8.5 8.5 0 1 1 10.5 4a6.5 6.5 0 0 0 9.5 9.5Z" fill="#7fb2ff"/>
+        </svg>
+      </span>
+      Moonshelf
+    </div>
+    <div class="nav-links">
+      <a href="#trending">อันดับยอดนิยม</a>
+      <a href="#genres">หมวดหมู่</a>
+      <a href="#releases">อัปเดตล่าสุด</a>
+      <a href="#">คลังของฉัน</a>
+    </div>
+    <div class="nav-actions">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="ค้นหาเรื่อง, นักเขียน...">
+      </div>
+      <a href="#" class="btn-signin">เข้าสู่ระบบ</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" style="padding-bottom:40px;">
+    <svg class="moon-orbit" viewBox="0 0 520 520" fill="none">
+      <circle cx="260" cy="260" r="220" stroke="#1c2740" stroke-width="1"/>
+      <circle cx="260" cy="260" r="160" stroke="#1c2740" stroke-width="1"/>
+      <circle cx="80" cy="150" r="4" fill="#62e0ff"/>
+      <circle cx="440" cy="330" r="3" fill="#7fb2ff"/>
+      <defs>
+        <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#eaf0ff"/>
+          <stop offset="55%" stop-color="#7fb2ff"/>
+          <stop offset="100%" stop-color="#0b1120" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="410" cy="110" r="70" fill="url(#moonGlow)"/>
+      <circle cx="395" cy="95" r="34" fill="#05070d" opacity="0.55"/>
+    </svg>
+
+    <div>
+      <div class="eyebrow">เปิดอ่านฟรีคืนนี้</div>
+      <h1>อ่านมังงะเรื่องโปรด<br>ใต้แสง<em>จันทร์</em></h1>
+      <p>Moonshelf คือชั้นหนังสือดิจิทัลที่รวมมังงะกว่าพันเรื่อง อัปเดตทุกคืนพระจันทร์ขึ้น พร้อมระบบติดตามความคืบหน้าแบบข้างขึ้นข้างแรม ให้ทุกตอนที่อ่านค้างไว้ไม่หายไปไหน</p>
+      <div class="hero-cta">
+        <a href="#trending" class="btn-primary">
+          เริ่มอ่านตอนนี้
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#genres" class="btn-ghost">ดูหมวดหมู่ทั้งหมด</a>
+      </div>
+      <div class="hero-stats">
+        <div><span class="num">2,140+</span><span class="lbl">เรื่องในคลัง</span></div>
+        <div><span class="num">180</span><span class="lbl">ตอนใหม่ต่อสัปดาห์</span></div>
+        <div><span class="num">98K</span><span class="lbl">นักอ่านออนไลน์คืนนี้</span></div>
+      </div>
+    </div>
+
+    <div class="shelf-hero">
+      <div class="shelf-row" id="heroShelf"></div>
+    </div>
+  </section>
+
+  <!-- CONTINUE READING -->
+  <section id="continue">
+    <div class="wrap" style="padding:0;">
+      <div class="section-head">
+        <div>
+          <div class="section-title">อ่านต่อจากที่ค้างไว้</div>
+          <div class="section-sub">ความคืบหน้าของคุณแสดงเป็นข้างขึ้นข้างแรม — ดวงเต็มคืออ่านจบเล่ม</div>
+        </div>
+        <a href="#" class="see-all">ดูคลังของฉัน →</a>
+      </div>
+      <div class="phase-rail" id="continueRail"></div>
+    </div>
+  </section>
+
+  <!-- TRENDING -->
+  <section id="trending">
+    <div class="section-head">
+      <div>
+        <div class="section-title">อันดับยอดนิยมประจำสัปดาห์</div>
+        <div class="section-sub">จัดอันดับจากยอดอ่านและยอดบันทึกเข้าคลังของนักอ่านทั่วเว็บ</div>
+      </div>
+      <a href="#" class="see-all">ดูทั้งหมด →</a>
+    </div>
+    <div class="grid-manga" id="trendingGrid"></div>
+  </section>
+
+  <!-- GENRES -->
+  <section id="genres">
+    <div class="section-head">
+      <div>
+        <div class="section-title">สำรวจตามหมวดหมู่</div>
+        <div class="section-sub">เลือกอารมณ์ที่อยากอ่านคืนนี้</div>
+      </div>
+    </div>
+    <div class="genre-scroll" id="genreList"></div>
+  </section>
+
+  <!-- NEW RELEASES -->
+  <section id="releases">
+    <div class="section-head">
+      <div>
+        <div class="section-title">อัปเดตล่าสุด</div>
+        <div class="section-sub">ตอนใหม่ที่เพิ่งลงชั้นหนังสือ</div>
+      </div>
+      <a href="#" class="see-all">ดูประวัติการอัปเดต →</a>
+    </div>
+    <div class="release-list" id="releaseList"></div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-band">
+    <div>
+      <h3>สร้างชั้นหนังสือของคุณเอง จัดเรียงตามที่ใจต้องการ</h3>
+      <p>สมัครสมาชิกฟรี บันทึกเรื่องโปรด รับแจ้งเตือนเมื่อตอนใหม่ลง และซิงก์การอ่านข้ามอุปกรณ์ได้ทันที</p>
+    </div>
+    <a href="#" class="btn-primary">สมัครสมาชิกฟรี</a>
+  </div>
+</main>
+
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <div class="logo">
+        <span class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20 13.5A8.5 8.5 0 1 1 10.5 4a6.5 6.5 0 0 0 9.5 9.5Z" fill="#7fb2ff"/></svg>
+        </span>
+        Moonshelf
+      </div>
+      <p>ชั้นหนังสือดิจิทัลสำหรับคนรักมังงะ อ่านได้ทุกที่ ทุกคืนพระจันทร์ขึ้น</p>
+    </div>
+    <div class="foot-col">
+      <h5>สำรวจ</h5>
+      <a href="#tren
